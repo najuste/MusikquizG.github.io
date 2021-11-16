@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" type="text/css" media="screen" href="./Beispiel:SELFHTML-Beispiel-Grundlayout.css" />
+	
 	<title>Theoriequiz</title>
 	<style>
 
@@ -23,20 +23,27 @@ h1 {
 	padding: 0;
 }
 
+#intro {font-size: 30px;}
+
+@media (hover: hover) {
+  #quiz label:hover {
+    background-color: #dfac20;
+  }
+}
+
 #quiz label {
 	display: block;
-	background-color: #fffbf0;
-	border: 2px solid #e7c157;
-	border-radius: 0.2em;
+	background-color: #F0F8FF;
 	margin: 0.1em 0;
 	padding: 1em 2em;
 	text-align: start;
 	max-width: 33em;
 }
 
-#quiz label:hover{
-	background-color: #dfac20;
-}
+// verwende folgenden Code, um immer Hover-Status der Antworten zu haben ohne Mediaquery (für Touchscreens schlecht):
+//#quiz label:hover{background-color: #dfac20;} 
+
+
 
 #quiz input:checked ~ label,
 #quiz input:focus ~ label  {
@@ -56,6 +63,7 @@ h1 {
 #quiz button,
 #quiz label {
 	cursor: pointer;
+	font-size: 30px;
 }
 
 /* listing with solutions */
@@ -98,8 +106,7 @@ h1 {
 
 	</style>
 	<script>
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Polyfill
-// Production steps of ECMA-262, Edition 6, 22.1.2.1
+
 if (!Array.from) {
   Array.from = (function () {
     var toStr = Object.prototype.toString;
@@ -118,48 +125,29 @@ if (!Array.from) {
       return Math.min(Math.max(len, 0), maxSafeInteger);
     };
 
-    // The length property of the from method is 1.
+   
     return function from(arrayLike/*, mapFn, thisArg */) {
-      // 1. Let C be the this value.
+    
       var C = this;
-
-      // 2. Let items be ToObject(arrayLike).
       var items = Object(arrayLike);
-
-      // 3. ReturnIfAbrupt(items).
       if (arrayLike == null) {
         throw new TypeError("Array.from requires an array-like object - not null or undefined");
       }
-
-      // 4. If mapfn is undefined, then let mapping be false.
       var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
       var T;
       if (typeof mapFn !== 'undefined') {
-        // 5. else
-        // 5. a If IsCallable(mapfn) is false, throw a TypeError exception.
         if (!isCallable(mapFn)) {
           throw new TypeError('Array.from: when provided, the second argument must be a function');
         }
 
-        // 5. b. If thisArg was supplied, let T be thisArg; else let T be undefined.
         if (arguments.length > 2) {
           T = arguments[2];
         }
       }
 
-      // 10. Let lenValue be Get(items, "length").
-      // 11. Let len be ToLength(lenValue).
       var len = toLength(items.length);
-
-      // 13. If IsConstructor(C) is true, then
-      // 13. a. Let A be the result of calling the [[Construct]] internal method 
-      // of C with an argument list containing the single item len.
-      // 14. a. Else, Let A be ArrayCreate(len).
       var A = isCallable(C) ? Object(new C(len)) : new Array(len);
-
-      // 16. Let k be 0.
       var k = 0;
-      // 17. Repeat, while k < len… (also steps a - h)
       var kValue;
       while (k < len) {
         kValue = items[k];
@@ -170,9 +158,8 @@ if (!Array.from) {
         }
         k += 1;
       }
-      // 18. Let putStatus be Put(A, "length", len, true).
+    
       A.length = len;
-      // 20. Return A.
       return A;
     };
   }());
@@ -182,7 +169,7 @@ if (!Array.from) {
 var myQuiz = {
 	container: null,
 
-	// helper function
+	
 	createElement: function (o) {
 		var el, p;
 
@@ -204,7 +191,7 @@ var myQuiz = {
 		return el;
 	},
 
-	// user interface for a quiz question
+	
 	createOptions: function () {
 		var t = this,
 			options = [],
@@ -215,6 +202,7 @@ var myQuiz = {
 		t.intoContainer(t.createElement({
 			tag: "h2",
 			text: t.currentQuestion.question+"</h2><br><img src='Bilder/"+t.currentQuestion.picture+" '>"
+
 		}));
 
 
@@ -226,7 +214,7 @@ var myQuiz = {
 		t.intoContainer(ul);
 
 
-		// create options 
+		
 		options.push(t.currentQuestion.solution);
 
 		t.currentQuestion.falses.forEach(function (s) {
@@ -258,7 +246,7 @@ var myQuiz = {
 
 		});
 
-		// Hinweis für Tastatur-User
+		
 		t.intoContainer(t.createElement({
 			tag: "button",
 			text: "confirm choice",
@@ -269,14 +257,15 @@ var myQuiz = {
 	currentChoices: [],
 	currentQuestion: null,
 
-	// data could be filled from an external source (JSON)
+// data kann in Form einer JSON-Datei eingepflegt werden
+
 	data: [{
 		category: 'Notenlehre',
 		picture: 'blank.png',
-		question: 'Welche Note steht im Violinschlüssel im obersten Zwischenraum?',
+		question: 'Welche Note steht im Violinschlüssel im vierten Zwischenraum?',
 		solution: 'e2',
 		falses: ['c2', 'h1', 'g2'],
-		explanation: 'Das e in der zweiten Oktave'
+		explanation: 'Das E in der zweiten Oktave steht im vierten Zwischenraum.'
 	}, {
 		category: 'Rhythmus',
 		picture: 'blank.png',
@@ -338,20 +327,20 @@ var myQuiz = {
 
 	handleInput: function () {
 		var t = this, // t points to myQuiz
-			// create real array so we can use forEach
+			
 			inputs = Array.from(
 				t.container.getElementsByTagName("input")
 			),
 			selectedSolution = "";
 
-		// determine selection
+		
 		inputs.forEach(function (o) {
 			if (o.checked) {
 				selectedSolution = o.value;
 			}
 		});
 
-		// process selected answer
+		
 		if (selectedSolution && t.currentQuestion) {
 			t.currentChoices.push({
 				a: selectedSolution,
@@ -361,7 +350,7 @@ var myQuiz = {
 			t.play();
 		}
 
-		// accept start button
+		
 		if (!t.currentQuestion) {
 			t.play();
 		}
@@ -370,14 +359,12 @@ var myQuiz = {
 	init: function () {
 		var t = this;
 
-		// here goes any code for loading data from an external source
+		// Hier Code einfügen um Daten von externer Quelle zu laden
 
 		t.container = document.getElementById("quiz");
 
 		if (t.data.length && t.container) {
 
-			// use anonymous functions so in handleInput
-			// "this" can point to myQuiz
 
 			t.container.addEventListener(
 				"submit",
@@ -393,10 +380,10 @@ var myQuiz = {
 				"mouseup",
 				function (ev) {
 
-					// we want to only support clicks on start buttons...
+					
 					var go = ev.target.tagName.match(/^button$/i);
 
-					// ... and labels for radio buttons when in a game
+					
 					if (ev.target.tagName.match(/^label$/i)
 						&& t.currentQuestion
 					) {
@@ -446,17 +433,17 @@ var myQuiz = {
 		return parent;
 	},
 
-	// ask next question or end quiz if none are left
+	
 	play: function () {
 		var t = this,
 			ol;
 
-		// game over?
+		
 		if (!t.questions.length) {
 
 			t.showResults();
 
-			// offer restart
+			
 			window.setTimeout(
 				function () {
 					t.start();
@@ -472,22 +459,22 @@ var myQuiz = {
 		t.createOptions();
 	},
 
-	// list with remaining quiz question objects
+	
 	questions: [],
 
-	// list original questions and given answers and elaborate on solutions
+	
 	showResults: function () {
 		var cat, ol, s, scores = {}, t = this, tab, thead, tbody, tr;
 
 		t.emptyContainer();
 
-		// show message
+		
 		t.intoContainer(t.createElement({
 			tag: "p",
 			text: "Alle Fragen wurden beantwortet. Hier nun die Auswertung dazu:"
 		}));
 
-		// list questions and given answers
+		
 		ol = t.intoContainer(t.createElement({
 			id: "result",
 			tag: "ol"
@@ -498,14 +485,14 @@ var myQuiz = {
 				tag: "li"
 			}));
 
-			// list original question
+			
 			li.appendChild(t.createElement({
 				className: "question",
 				tag: "p",
 				text: "(" + o.q.category + ") " + o.q.question
 			}));
 
-			// list given answer
+			
 			p = li.appendChild(t.createElement({
 				tag: "p",
 				text: "ausgewählte Antwort: "
@@ -521,7 +508,7 @@ var myQuiz = {
 				text: o.a
 			}));
 
-			// wrong answer?
+			
 			if (o.q.solution != o.a) {
 
 				p = li.appendChild(t.createElement({
@@ -535,7 +522,7 @@ var myQuiz = {
 				}));
 			}
 
-			// elaborate on solution?
+			
 			if (o.q.explanation) {
 
 				p = li.appendChild(t.createElement({
@@ -550,7 +537,7 @@ var myQuiz = {
 			}
 		});
 
-		// display a kind of percentual score over the categories
+		
 		cat = [];
 
 		t.currentChoices.forEach(function (o) {
@@ -619,14 +606,14 @@ var myQuiz = {
 			}));
 		}
 
-		// show message
+		
 		t.intoContainer(t.createElement({
 			tag: "p",
 			text: "Ein weiterer Versuch mit den gleichen Fragen?"
 		}));
 	},
 
-	// helper function: shuffle array (adapted from http://javascript.jstruebig.de/javascript/69)
+	
 	shuffleArray: function (a) {
 		var i = a.length;
 
@@ -636,15 +623,14 @@ var myQuiz = {
 			a[zi] = a[--i];
 			a[i] = t;
 		}
-		// no return argument since the array has been
-		// handed over as a reference and not a copy!
+		
 	},
 
-	// start quiz with a start button
+	
 	start: function () {
 		var t = this;
 
-		// fill list of remaining quiz questions
+		
 		t.questions = [];
 
 		t.data.forEach(function (o) {
@@ -656,12 +642,13 @@ var myQuiz = {
 		t.currentChoices = [];
 		t.currentQuestion = null;
 
-		// install start button
+		
 		t.intoContainer(
 			t.createElement({
 				className: "startBtn",
 				tag: "button",
-				text: "Starte Quiz!"
+				text: "Los geht's!"
+				
 			}),
 			"p"
 		);
@@ -680,7 +667,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	<main id="main">
 
 		<form id="quiz" action="">
-			<p id="intro">Hier werden Kenntnisse aus den Bereichen Notenlehre, Rhythmus, Skalen und musikalisches Allgemeinwissen abgefragt. Am Ende gibt es eine Auswertung. </p>
+			<p id="intro">Hier testest du dein Wissen in den Bereichen <br><br><b>Notenlehre, <br>Rhythmus, <br>Tonleitern, <br>Intervalle und <br>musikalisches Allgemeinwissen</b>. <br><br>Am Ende gibt es eine Auswertung. </p>
 		</form>
 	</main>
 
