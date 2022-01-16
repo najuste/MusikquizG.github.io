@@ -11,6 +11,12 @@ h1 {
 	background: #f1f3f4 none repeat scroll 0 0 !important;
 	padding: 1rem !important;
 }
+		
+.question-image {
+    margin: 10px auto;
+    width: 100%;
+    max-width: max-content;
+}
 
 #quiz ul {
 	list-style: none;
@@ -201,7 +207,7 @@ var myQuiz = {
 
 		t.intoContainer(t.createElement({
 			tag: "h2",
-			text: t.currentQuestion.question+"</h2><br><img src='Bilder/"+t.currentQuestion.picture+" '>"
+			text: t.currentQuestion.question+"</h2><br><img class='question-image' src='Bilder/"+t.currentQuestion.picture+" '>"
 
 		}));
 
